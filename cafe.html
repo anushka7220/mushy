@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Mushroom Cozy Cafe</title>
+  <link rel="stylesheet" href="cafe.css" />
+</head>
+<!-- Lottie Web CDN -->
+<!-- Google Fonts: DM Serif Display (headings) + Quicksand (body) -->
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Quicksand:wght@300;400;600&display=swap"
+  rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // hide both bear containers at the start
+    document.querySelectorAll(".bear-animation").forEach(el => {
+      el.style.opacity = "0";
+      el.style.pointerEvents = "none";
+    });
+
+    const c1 = document.getElementById("bear-container");    // Brown Bear spot
+    const c2 = document.getElementById("bear-container-2");  // Baking spot
+
+    // --- Brown Bear animation (before session starts) ---
+    const bear1 = lottie.loadAnimation({
+      container: c1,
+      renderer: "svg",
+      loop: true,
+      autoplay: false,
+      path: "Brown Bear.json"
+    });
+
+    // --- Baking animation (during session) ---
+    const bakingAnim = lottie.loadAnimation({
+      container: c2,
+      renderer: "svg",
+      loop: true,
+      autoplay: false,
+      path: "baking.json"
+    });
+
+    // Called from intro "Next" – show only Brown Bear in the window
+    window.startWindowBearAnimation = function () {
+      if (c1) {
+        c1.style.opacity = "1";
+        c1.style.pointerEvents = "none";
+      }
+      if (c2) {
+        c2.style.opacity = "0";   // keep baking hidden for now
+      }
+      bear1.goToAndPlay(0, true); // loop Brown Bear
+    };
+
+    // Called when the top "Start" button is pressed
+    // 1) fade out Brown Bear
+    // 2) fade in baking.json and start it
+    window.stopWindowBearAnimation = function () {
+      // stop brown bear
+      bear1.stop();
+      if (c1) {
+        c1.style.transition = "opacity .6s ease";
+        c1.style.opacity = "0";
+      }
+
+      // after the fade, show baking animation
+      if (c2) {
+        c2.style.transition = "opacity .6s ease";
+        setTimeout(() => {
+          c2.style.opacity = "1";
+          bakingAnim.goToAndPlay(0, true);   // loop baking.json
+        }, 600); // matches fade duration above
+      }
+    };
+
+    // (for later, when timer ends you can stop baking like this:)
+    window.stopBakingAnimation = function () {
+      bakingAnim.stop();
+      if (c2) c2.style.opacity = "0";
+    };
+    // Start baking bowl animation
+    window.startBakingAnimation = function () {
+      const c2 = document.getElementById("bear-container-2");
+      if (c2) {
+        c2.style.opacity = "1";
+      }
+      bakingAnim.goToAndPlay(0, true);
+    };
+
+    // Stop baking animation
+    window.stopBakingAnimation = function () {
+      bakingAnim.stop();
+      const c2 = document.getElementById("bear-container-2");
+      if (c2) {
+        c2.style.transition = "opacity .6s ease";
+        c2.style.opacity = "0";
+      }
+    };
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const bakedCakeWindow = document.getElementById("baked-cake-window");
+    const doneBtn = document.getElementById("bake-done-btn");
+
+    // show selected cake inside the cottage window
+    window.showBakedCakeInWindow = function () {
+      if (!bakedCakeWindow) return;
+
+      const cake = window.getSelectedCake ? window.getSelectedCake() : null;
+      if (!cake) {
+        bakedCakeWindow.style.display = "none";
+        return;
+      }
+
+      bakedCakeWindow.src = cake;      // e.g. "cake3.png"
+      bakedCakeWindow.style.display = "block";
+    };
+
+    // hide previous cake when a new session starts
+    window.hideBakedCakeWindow = function () {
+      if (!bakedCakeWindow) return;
+      bakedCakeWindow.style.display = "none";
+    };
+
+    // show reset button at end
+    window.showBakeDoneButton = function () {
+      if (!doneBtn) return;
+      doneBtn.hidden = false;
+    };
+
+    if (doneBtn) {
+      doneBtn.addEventListener("click", () => {
+        location.reload();   // full reset
+      });
+    }
+  });
+</script>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const introOverlay = document.getElementById("intro-overlay");
+    const nextBtn = document.getElementById("intro-next");
+
+    // body starts in intro mode
+    document.body.classList.add("intro-active");
+
+    function closeIntro() {
+      // hide overlay nicely
+      introOverlay.classList.add("hide");
+      setTimeout(() => {
+        introOverlay.remove();
+      }, 320);
+
+      // show features, and play pop animation (section 3)
+      document.body.classList.remove("intro-active");
+      document.body.classList.add("features-pop");
+      setTimeout(() => document.body.classList.remove("features-pop"), 500);
+
+      // now start the bear.json animation in the window
+      if (window.startWindowBearAnimation) {
+        window.startWindowBearAnimation();
+      }
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", closeIntro);
+    }
+  });
+</script>
+
+<script>
+  // quick intro pulse so the icons feel alive on first load
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.annotation .annotation-icon.animate').forEach((el, i) => {
+      // stagger pulses
+      setTimeout(() => {
+        el.style.transition = "transform .36s ease, filter .36s ease";
+        el.style.transform = "translateY(-6px) scale(1.03)";
+        setTimeout(() => el.style.transform = "", 360);
+      }, 300 + i * 120);
+    });
+  });
+</script>
+
+
+<body>
+  <!-- COIN BUTTON / POINTS -->
+  <button id="coin-btn" aria-label="Points" title="Points">
+    <img src="coin.png" alt="coin" />
+    <span id="coin-count">0</span>
+  </button>
+  <!-- Music speaker toggle -->
+  <img id="speaker-toggle" src="speaker.png" alt="Toggle music" />
+
+  <!-- small +1 popup template (cloned by JS) -->
+  <div id="coin-pop" aria-hidden="true"></div>
+
+  <div class="leaf-layer">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+    <img src="leaf.png" class="leaf">
+  </div>
+  <!-- PEEBO INTRO OVERLAY -->
+  <div id="intro-overlay">
+    <div class="intro-inner">
+      <!-- Bear standing outside -->
+      <img id="peebo-bear" src="bear1.png" alt="Peebo the bear" />
+
+      <!-- Speech bubble -->
+      <div class="intro-bubble">
+        <div class="intro-text">
+          <p>Hey there, welcome to the Mushy Cottage!</p>
+          <p>My name is Peebo and I’ll bake for you while you study or work.</p>
+          <p>Ready to step inside?</p>
+        </div>
+        <button id="intro-next">Next →</button>
+      </div>
+    </div>
+    <!-- Signpost: bottom-left, only while intro overlay exists -->
+    <div id="intro-signpost">
+      <img src="signpost.png" alt="Signpost">
+    </div>
+  </div>
+
+  <!-- ANNOTATIONS: Replace your old .annotations block with this -->
+  <div class="annotations">
+
+    <!-- Timer annotation: add class "timer" -->
+    <div class="annotation left timer" style="top:6%; left:2%;">
+      <div class="annotation-inner">
+        <img class="annotation-icon" src="timer.gif" alt="Timer">
+        <div class="annotation-text">
+          <div class="label-title">Timer & Focus</div>
+          <div class="label-sub">Set a timer, enter your zone.</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="annotation right" style="top:8%; right:2%;">
+      <div class="annotation-inner">
+        <img class="annotation-icon animate" src="cake.png" alt="Bake">
+        <div class="annotation-text">
+          <div class="label-title">Bake-Your-Focus System</div>
+          <div class="label-sub">Pick a treat to bake as you work.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation left" style="top:36%; left:2%;">
+      <div class="annotation-inner">
+        <img class="annotation-icon animate" src="mood.png" alt="Mood">
+        <div class="annotation-text">
+          <div class="label-title">Mood Selector</div>
+          <div class="label-sub">Choose your mood, choose your music.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation right" style="top:56%; right:2%;">
+      <div class="annotation-inner">
+        <img class="annotation-icon animate" src="store.png" alt="Rewards">
+        <div class="annotation-text">
+          <div class="label-title">Store</div>
+          <div class="label-sub">Finish a session, earn a sweet reward.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="annotation left friends" style="bottom:6%; left:2%;">
+      <div class="annotation-inner">
+        <img class="annotation-icon" src="friends.gif" alt="Friends">
+        <div class="annotation-text">
+          <div class="label-title">Friends</div>
+          <div class="label-sub">Invite a friend to bake together.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- dev reference image (comment/uncomment as needed) -->
+
+  <div class="page-frame">
+    <main class="content-center">
+      <div class="cafe-wrapper">
+        <!-- Bear animation containers -->
+        <div id="bear-container" class="bear-animation"></div>
+        <div id="bear-container-2" class="bear-animation"></div>
+        <!-- Cake that appears in the cafe window after baking is done -->
+        <img id="baked-cake-window" alt="Baked treat in window" />
+
+        <!-- smoke overlay -->
+        <div class="smoke">
+          <div class="smoke-puff"></div>
+          <div class="smoke-puff"></div>
+          <div class="smoke-puff"></div>
+        </div>
+
+        <!-- big pixel-art cafe image (use your website image here) -->
+        <img src="cafe.png" alt="Cozy Mushroom Cafe" class="cafe-scene" />
+      </div>
+    </main>
+  </div>
+  <!-- Cake that appears in the cafe window after baking is done -->
+  <img id="baked-cake-display" class="baked-cake-display" alt="Freshly baked treat" hidden>
+
+  <!-- Congrats / reset button -->
+  <button id="bake-done-btn" class="bake-done-btn" hidden>
+    <div class="done-title">Baking complete!</div>
+    <div id="earned-coins-text" class="earned-coins-text"></div>
+    <div class="done-reset">Reset ↺</div>
+  </button>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // create HTML helper
+      function htmlToEl(html) {
+        const tmp = document.createElement('template');
+        tmp.innerHTML = html.trim();
+        return tmp.content.firstChild;
+      }
+
+      // Create panel if not present
+      let panel = document.getElementById('timer-panel');
+      if (!panel) {
+        panel = htmlToEl(`
+      <div id="timer-panel" class="timer-panel" role="dialog" aria-hidden="true" aria-label="Set timer">
+        <div class="timer-panel-head">
+          <div class="timer-title">Set Timer</div>
+          <div class="timer-sub">Choose minutes (max 120)</div>
+        </div>
+        <div class="timer-top">
+          <div class="slider-wrap" style="flex:1">
+            <div class="range-row">
+              <input id="timer-range" type="range" min="1" max="120" step="1" value="25" aria-label="Minutes slider">
+            </div>
+            <div class="preset-row" aria-hidden="false">
+              <button type="button" class="preset-btn" data-min="25">25</button>
+              <button type="button" class="preset-btn" data-min="50">50</button>
+              <button type="button" class="preset-btn" data-min="90">90</button>
+            </div>
+          </div>
+          <div id="timer-value" class="timer-value" aria-live="polite">25 min</div>
+        </div>
+        <div class="timer-controls">
+          <button id="timer-start" class="btn primary" aria-label="Set timer">Set</button>
+          <button id="timer-cancel" class="btn ghost" aria-label="Cancel timer">Cancel</button>
+        </div>
+      </div>
+    `);
+        document.body.appendChild(panel);
+      }
+
+      // create countdown badge if missing
+      let badge = document.getElementById('countdown-badge');
+      if (!badge) {
+        badge = htmlToEl('<div id="countdown-badge" aria-live="polite" hidden><span id="countdown-text">00:00</span></div>');
+        document.body.appendChild(badge);
+      }
+
+      // Elements
+      const range = document.getElementById('timer-range');
+      const valueEl = document.getElementById('timer-value');
+      const startBtn = document.getElementById('timer-start');
+      const cancelBtn = document.getElementById('timer-cancel');
+      const presets = panel.querySelectorAll('.preset-btn');
+      const timerIcon = document.querySelector('.annotation.timer .annotation-icon'); // trigger position
+
+      let runningInterval = null;
+      let remaining = 0;
+      let focusTotalSeconds = 0;
+      // how many minutes this session is set for
+      let focusMinutes = 0;
+
+      // --- COIN SYSTEM: load and update coin count ---
+      const coinCountEl = document.getElementById('coin-count');
+      let coinTotal = 0;
+
+      if (coinCountEl) {
+        coinTotal = parseInt(localStorage.getItem('coin-count') || '0', 10);
+        if (Number.isNaN(coinTotal)) coinTotal = 0;
+        coinCountEl.textContent = coinTotal;
+      }
+
+      function addCoins(amount) {
+        if (!coinCountEl) return;
+        const val = Math.max(0, Math.floor(Number(amount) || 0));
+        if (!val) return;
+        coinTotal += val;
+        coinCountEl.textContent = coinTotal;
+        localStorage.setItem('coin-count', coinTotal);
+      }
+
+
+      // Update numeric display from slider
+      function updateValueDisplay(v) {
+        valueEl.textContent = `${v} ${v === 1 ? 'min' : 'min'}`;
+        // highlight matching preset
+        presets.forEach(p => p.classList.toggle('active', Number(p.dataset.min) === Number(v)));
+      }
+
+      // initial sync
+      updateValueDisplay(range.value);
+
+      // slider events
+      range.addEventListener('input', (e) => {
+        updateValueDisplay(e.target.value);
+      });
+      range.addEventListener('change', (e) => {
+        updateValueDisplay(e.target.value);
+      });
+
+      // presets
+      presets.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const m = Number(btn.dataset.min);
+          range.value = m;
+          updateValueDisplay(m);
+        });
+      });
+
+      // format mm:ss
+      function fmt(sec) {
+        const m = Math.floor(sec / 60).toString().padStart(2, '0');
+        const s = (sec % 60).toString().padStart(2, '0');
+        return `${m}:${s}`;
+      }
+
+      // position & open/close panel (similar to your previous logic)
+      function positionPanel(iconEl) {
+        if (!iconEl) {
+          // default top-right
+          panel.style.left = `${window.innerWidth - panel.offsetWidth - 24}px`;
+          panel.style.top = `88px`;
+          return;
+        }
+        const r = iconEl.getBoundingClientRect();
+        const gap = 12;
+        let left = r.right + gap;
+        if (left + panel.offsetWidth > window.innerWidth - 8) {
+          // flip left
+          left = r.left - gap - panel.offsetWidth;
+          panel.classList.add('flip-left');
+        } else panel.classList.remove('flip-left');
+        panel.style.left = `${Math.max(8, left)}px`;
+        panel.style.top = `${Math.max(8, r.top)}px`;
+      }
+
+      function openPanel() {
+        positionPanel(timerIcon);
+        panel.setAttribute('aria-hidden', 'false');
+        panel.style.pointerEvents = 'auto';
+        range.focus();
+      }
+      function closePanel() {
+        panel.setAttribute('aria-hidden', 'true');
+        panel.style.pointerEvents = 'none';
+      }
+
+      // this only records the minutes & updates the badge, it does NOT start ticking
+      function setTimerMinutes() {
+        const minutes = Number(range.value);
+        if (isNaN(minutes) || minutes <= 0) return;
+        focusMinutes = minutes;
+        focusTotalSeconds = minutes * 60;
+        remaining = focusTotalSeconds;
+
+        // show mm:00 but don't start interval
+        document.getElementById('countdown-text').textContent = fmt(remaining);
+        badge.hidden = false;
+
+        closePanel();
+      }
+
+      // old: startBtn.addEventListener('click', startTimer);
+      startBtn.addEventListener('click', setTimerMinutes);
+
+      // actual countdown – will be called from the global "Start" button
+      function startSessionTimer() {
+        if (!focusTotalSeconds || runningInterval) return;
+        if (window.updateCakeProgress) {
+          window.updateCakeProgress(0);   // start fully gray every new session
+        }
+        // NEW: switch from window bear to baking bowl
+        if (window.stopWindowBearAnimation) window.stopWindowBearAnimation();
+        if (window.hideBakedCakeWindow) window.hideBakedCakeWindow();
+        if (window.startBakingAnimation) window.startBakingAnimation();
+        remaining = focusTotalSeconds;
+        badge.hidden = false;
+        document.getElementById('countdown-text').textContent = fmt(remaining);
+
+        runningInterval = setInterval(() => {
+          remaining--;
+          if (remaining <= 0) {
+            clearInterval(runningInterval);
+            runningInterval = null;
+            document.getElementById('countdown-text').textContent = "00:00";
+            setTimeout(() => badge.hidden = true, 900);
+
+            const coinBtn = document.getElementById('coin-btn');
+            if (coinBtn) {
+              coinBtn.classList.add('pulse');
+              setTimeout(() => coinBtn.classList.remove('pulse'), 800);
+            }
+
+            if (window.updateCakeProgress) {
+              window.updateCakeProgress(1); // 100%
+            }
+
+            // 🔥 NEW: stop bowl animation + show baked cake + show reset button
+            if (window.stopBakingAnimation) window.stopBakingAnimation();
+            if (window.showBakedCakeInWindow) window.showBakedCakeInWindow();
+            if (window.showBakeDoneButton) window.showBakeDoneButton();
+            // add coins based on selected time: 1 minute = 1 coin
+            const earned = focusMinutes || Math.round(focusTotalSeconds / 60);
+            addCoins(earned);
+            // Show earned coins in the Congrats panel
+            const txt = document.getElementById("earned-coins-text");
+            if (txt) {
+              txt.textContent = `You earned +${earned} coins!`;
+            }
+
+            // Show the Congrats button
+            const doneBtn = document.getElementById("bake-done-btn");
+            if (doneBtn) doneBtn.hidden = false;
+
+
+            return;
+          }
+          document.getElementById('countdown-text').textContent = fmt(remaining);
+
+          // update cake fill as time passes
+          if (window.updateCakeProgress && focusTotalSeconds) {
+            const done = 1 - remaining / focusTotalSeconds;
+            window.updateCakeProgress(done);
+          }
+        }, 1000);
+      }
+
+      // expose start function so other scripts can call it
+      window.startFocusSession = startSessionTimer;
+
+
+      function cancelTimer() {
+        if (runningInterval) {
+          clearInterval(runningInterval);
+          runningInterval = null;
+          badge.hidden = true;
+        }
+        closePanel();
+      }
+
+      // Hook up controls
+      startBtn.addEventListener('click', setTimerMinutes);
+      cancelBtn.addEventListener('click', cancelTimer);
+
+      // If the annotation icon exists, make it interactive then open the panel on click
+      if (timerIcon) {
+        timerIcon.style.pointerEvents = 'auto';
+        timerIcon.style.cursor = 'pointer';
+        timerIcon.addEventListener('click', () => {
+          const visible = panel.getAttribute('aria-hidden') === 'false';
+          if (visible) closePanel(); else openPanel();
+        });
+      } else {
+        // fallback button if missing icon
+        if (!document.getElementById('timer-fallback')) {
+          const fb = document.createElement('button');
+          fb.id = 'timer-fallback';
+          fb.textContent = '⏱';
+          Object.assign(fb.style, { position: 'fixed', right: '18px', top: '74px', zIndex: 9999 });
+          fb.addEventListener('click', () => openPanel());
+          document.body.appendChild(fb);
+        }
+      }
+
+      // Keyboard accessibility
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closePanel();
+        if (panel.getAttribute('aria-hidden') === 'false') {
+          if (e.key === 'ArrowRight') { range.stepUp(); range.dispatchEvent(new Event('input')); }
+          if (e.key === 'ArrowLeft') { range.stepDown(); range.dispatchEvent(new Event('input')); }
+          if (e.key === 'Enter') startTimer();
+        }
+      });
+
+      // reposition on resize
+      window.addEventListener('resize', () => {
+        if (panel.getAttribute('aria-hidden') === 'false') positionPanel(timerIcon);
+      });
+
+      console.info('Slider timer initialized.');
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Helper to create element from HTML
+      function htmlToEl(html) {
+        const t = document.createElement('template');
+        t.innerHTML = html.trim();
+        return t.content.firstChild;
+      }
+
+      // Create mood panel if missing
+      let moodPanel = document.getElementById('mood-panel');
+      if (!moodPanel) {
+        moodPanel = htmlToEl(`
+      <div id="mood-panel" class="mood-panel" role="dialog" aria-hidden="true" aria-label="Mood selector">
+        <div class="mood-head">
+          <div>
+            <div class="mood-title">Mood</div>
+            <div class="mood-sub">Pick a mood & music (tags saved)</div>
+          </div>
+          <div class="mood-preview" id="mood-preview" aria-hidden="true"></div>
+        </div>
+
+        <div class="mood-group" id="mood-section">
+          <div class="group-label">Mood</div>
+          <div class="mood-buttons">
+            <button type="button" class="mood-opt" data-mood="Study">Study</button>
+            <button type="button" class="mood-opt" data-mood="Work">Work</button>
+            <button type="button" class="mood-opt" data-mood="Other">Other</button>
+          </div>
+          <div class="mood-other-wrap" id="other-wrap" style="display:none">
+            <input class="mood-other-input" id="other-input" placeholder="Custom mood name (e.g. 'Focus')" />
+          </div>
+        </div>
+
+        <div class="mood-group" id="music-section">
+          <div class="group-label">Music</div>
+          <div class="mood-buttons">
+            <button type="button" class="mood-opt" data-music="Calm">Calm</button>
+            <button type="button" class="mood-opt" data-music="Retro">Retro</button>
+            <button type="button" class="mood-opt" data-music="Disco">Disco</button>
+          </div>
+        </div>
+
+        <div class="mood-controls">
+          <button class="mood-cancel" id="mood-cancel">Cancel</button>
+          <button class="mood-save" id="mood-save">Save</button>
+        </div>
+      </div>
+    `);
+        document.body.appendChild(moodPanel);
+        console.info('Mood panel created.');
+      }
+
+      // Ensure mood tag display near coin button
+      function ensureMoodTag() {
+        let tag = document.getElementById('mood-tag');
+        if (!tag) {
+          tag = document.createElement('div');
+          tag.id = 'mood-tag';
+          tag.setAttribute('aria-live', 'polite');
+          tag.textContent = 'tag · music';    // <-- default text
+          document.body.appendChild(tag);
+        }
+        return tag;
+      }
+
+
+
+      const moodTag = ensureMoodTag();
+      // Elements & buttons
+      const moodButtons = moodPanel.querySelectorAll('.mood-opt[data-mood]');
+      const otherWrap = document.getElementById('other-wrap');
+      const otherInput = document.getElementById('other-input');
+      const musicButtons = moodPanel.querySelectorAll('.mood-opt[data-music]');
+      const saveBtn = document.getElementById('mood-save');
+      const cancelBtn = document.getElementById('mood-cancel');
+      const moodPreview = document.getElementById('mood-preview');
+
+      // --- STATE (load from localStorage if exists) ---
+      let state = {
+        mood: localStorage.getItem('mood-selected') || null,
+        music: localStorage.getItem('music-selected') || null,
+        customMood: localStorage.getItem('mood-custom') || ''
+      };
+
+      // === Music playback ===
+      let currentAudio = null;
+      let musicMuted = localStorage.getItem('music-muted') === 'true';
+      // --- HUD cake preview helpers ---
+      window.setCakePreview = function (src) {
+        const color = document.getElementById('cake-progress-color');
+        const mask = document.getElementById('cake-progress-mask');
+        if (!color || !mask || !src) return;
+
+        color.src = src;
+        mask.src = src;
+
+        // reset mask to 0% progress (fully gray overlay)
+        mask.style.clipPath = 'inset(0 0 0 0)';
+      };
+
+
+      // let other scripts update the mask based on progress 0..1
+      window.updateCakeProgress = function (fractionDone) {
+        const mask = document.getElementById('cake-progress-mask');
+        if (!mask) return;
+        const pct = Math.max(0, Math.min(1, fractionDone || 0));
+        // hide bottom part of gray overlay as time passes
+        const topInset = pct * 100;
+        mask.style.clipPath = `inset(${topInset}% 0 0 0)`;
+      };
+
+      function playSelectedMusic() {
+        // do nothing if no music or muted
+        if (!state.music || musicMuted) return;
+
+        let src = null;
+        const key = state.music.toLowerCase();
+        if (key === 'calm') src = 'calm.mp3';
+        else if (key === 'retro') src = 'retro.mp3';
+        else if (key === 'disco') src = 'disco.mp3';
+
+        if (!src) return;
+
+        // stop previous track
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+
+        currentAudio = new Audio(src);
+        currentAudio.loop = true;
+        currentAudio.volume = 0.5;
+        currentAudio.play().catch(() => {
+          console.warn('Audio play blocked by browser');
+        });
+      }
+
+      function stopMusic() {
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.currentTime = 0;
+        }
+      }
+
+      // tag text in top pill
+      function updateMoodTag() {
+        const hasMood = !!state.mood;
+        const hasMusic = !!state.music;
+
+        if (!hasMood && !hasMusic) {
+          // default placeholder before any selection
+          moodTag.textContent = 'tag · music';
+        } else {
+          const parts = [];
+          if (hasMood) parts.push(state.mood);
+          if (hasMusic) parts.push(state.music);
+          moodTag.textContent = parts.join(' · ');
+        }
+      }
+
+      // Apply state to UI
+      function applyStateToUI() {
+        // moods
+        moodButtons.forEach(b => {
+          const m = b.dataset.mood;
+          if (m === 'Other') {
+            const isCustom = state.mood && !['Study', 'Work'].includes(state.mood);
+            b.classList.toggle('active', isCustom);
+          } else {
+            b.classList.toggle('active', state.mood === m);
+          }
+        });
+
+        // other input show/hide and value
+        const isOtherActive = state.mood && !['Study', 'Work'].includes(state.mood);
+        otherWrap.style.display = isOtherActive ? 'flex' : 'none';
+        otherInput.value = isOtherActive ? state.mood : (state.customMood || '');
+
+        // music
+        musicButtons.forEach(b => {
+          b.classList.toggle('active', state.music === b.dataset.music);
+        });
+
+        updateMoodTag();
+      }
+
+      // ----- handlers -----
+      moodButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const m = btn.dataset.mood;
+          if (m === 'Other') {
+            if (!state.mood || ['Study', 'Work'].includes(state.mood)) {
+              state.mood = state.customMood || 'Other';
+            }
+            otherWrap.style.display = 'flex';
+            otherInput.focus();
+          } else {
+            state.mood = m;
+            otherWrap.style.display = 'none';
+          }
+          applyStateToUI();
+        });
+
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+        });
+      });
+
+      otherInput.addEventListener('input', (e) => {
+        const v = e.target.value.trim();
+        if (v.length) {
+          state.mood = v;
+          state.customMood = v;
+        } else {
+          state.mood = null;
+          state.customMood = '';
+        }
+        applyStateToUI();
+      });
+
+      musicButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const music = btn.dataset.music;
+          state.music = music;
+          applyStateToUI();
+          // NOTE: we only actually change audio on Save,
+          // so this just updates the selected button.
+        });
+        btn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+        });
+      });
+
+      // Save/cancel behavior
+      saveBtn.addEventListener('click', () => {
+        // persist
+        if (state.mood) localStorage.setItem('mood-selected', state.mood);
+        else localStorage.removeItem('mood-selected');
+
+        if (state.music) localStorage.setItem('music-selected', state.music);
+        else localStorage.removeItem('music-selected');
+
+        if (state.customMood) localStorage.setItem('mood-custom', state.customMood);
+        else localStorage.removeItem('mood-custom');
+
+        applyStateToUI();
+        // <<< THIS is the important part: switch to the newly saved track
+        stopMusic();
+        playSelectedMusic();
+
+        closePanel();
+      });
+
+      cancelBtn.addEventListener('click', () => {
+        // reload state from storage (discard unsaved changes)
+        state = {
+          mood: localStorage.getItem('mood-selected') || null,
+          music: localStorage.getItem('music-selected') || null,
+          customMood: localStorage.getItem('mood-custom') || ''
+        };
+        applyStateToUI();
+
+        // if user had music selected before and not muted, resume it
+        stopMusic();
+        if (!musicMuted && state.music) {
+          playSelectedMusic();
+        }
+        closePanel();
+      });
+
+      // positioning & open/close similar to timer
+      function positionPanelNear(el) {
+        if (!el) {
+          moodPanel.style.left = `${window.innerWidth - moodPanel.offsetWidth - 24}px`;
+          moodPanel.style.top = `120px`;
+          return;
+        }
+        const rect = el.getBoundingClientRect();
+        const gap = 12;
+        let left = rect.right + gap;
+        if (left + moodPanel.offsetWidth > window.innerWidth - 8) {
+          left = rect.left - gap - moodPanel.offsetWidth;
+          moodPanel.classList.add('flip-left');
+        } else moodPanel.classList.remove('flip-left');
+        moodPanel.style.left = `${Math.max(8, left)}px`;
+        moodPanel.style.top = `${Math.max(8, rect.top)}px`;
+      }
+
+      function openPanel(clickTarget) {
+        positionPanelNear(clickTarget);
+        moodPanel.setAttribute('aria-hidden', 'false');
+        moodPanel.style.pointerEvents = 'auto';
+        const first = moodPanel.querySelector('.mood-opt');
+        first && first.focus();
+      }
+      function closePanel() {
+        moodPanel.setAttribute('aria-hidden', 'true');
+        moodPanel.style.pointerEvents = 'none';
+      }
+
+      // Open panel when annotation (Mood Selector) clicked.
+      let moodAnnotation = document.querySelector('.annotation.mood');
+      if (!moodAnnotation) {
+        moodAnnotation = Array.from(document.querySelectorAll('.annotation')).find(a => {
+          const title = a.querySelector('.label-title')?.textContent?.trim()?.toLowerCase();
+          return title && title.includes('mood');
+        });
+      }
+
+      if (moodAnnotation) {
+        moodAnnotation.style.pointerEvents = 'auto';
+        moodAnnotation.setAttribute('tabindex', '0');
+
+        const clickableTarget = moodAnnotation.querySelector('.annotation-inner') || moodAnnotation;
+
+        clickableTarget.addEventListener('click', () => {
+          openPanel(moodAnnotation.getBoundingClientRect ? moodAnnotation : clickableTarget);
+        });
+        clickableTarget.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openPanel(moodAnnotation);
+          }
+        });
+      } else {
+        console.warn('Mood annotation not found. To open mood panel, call openPanel() or add class "annotation mood" to your mood annotation.');
+      }
+
+      // Keyboard: Esc closes panel
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePanel();
+      });
+
+      // click outside to close
+      document.addEventListener('click', (e) => {
+        if (!moodPanel.contains(e.target) && !(moodAnnotation && moodAnnotation.contains(e.target))) {
+          closePanel();
+        }
+      });
+
+      // load stored state on init
+      state = {
+        mood: localStorage.getItem('mood-selected') || null,
+        music: localStorage.getItem('music-selected') || null,
+        customMood: localStorage.getItem('mood-custom') || ''
+      };
+      applyStateToUI();
+
+      // start music on load if there is a saved track and not muted
+      if (!musicMuted && state.music) {
+        playSelectedMusic();
+      }
+
+      // expose selection to other parts of the app
+      window.getUserMoodSelection = function () {
+        return { mood: state.mood, music: state.music };
+      };
+
+      // === Speaker toggle control ===
+      const speakerToggle = document.getElementById('speaker-toggle');
+      function updateSpeakerIcon() {
+        if (!speakerToggle) return;
+        if (musicMuted) speakerToggle.classList.add('muted');
+        else speakerToggle.classList.remove('muted');
+      }
+      updateSpeakerIcon();
+
+      if (speakerToggle) {
+        speakerToggle.addEventListener('click', () => {
+          musicMuted = !musicMuted;
+          localStorage.setItem('music-muted', musicMuted);
+          updateSpeakerIcon();
+
+          if (musicMuted) {
+            stopMusic();
+          } else {
+            playSelectedMusic();
+          }
+        });
+      }
+
+      console.info('Mood selector initialized.');
+
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // helper to create element from html
+      function htmlToEl(html) {
+        const tmp = document.createElement('template');
+        tmp.innerHTML = html.trim();
+        return tmp.content.firstChild;
+      }
+
+      // ensure bake panel exists (create if missing)
+      let bakePanel = document.getElementById('bake-panel');
+      if (!bakePanel) {
+        bakePanel = htmlToEl(`
+      <div id="bake-panel" class="bake-panel" role="dialog" aria-hidden="true" aria-label="Bake your focus">
+        <div class="bake-head">
+          <div>
+            <div class="bake-title">Bake-Your-Focus System</div>
+            <div class="bake-sub">Pick a treat to bake as you work.</div>
+          </div>
+        </div>
+        <div class="bake-grid" id="bake-grid">
+          <div class="bake-item" data-src="cake1.png" tabindex="0"><img src="cake1.png" alt="Cake 1"></div>
+          <div class="bake-item" data-src="cake2.png" tabindex="0"><img src="cake2.png" alt="Cake 2"></div>
+          <div class="bake-item" data-src="cake3.png" tabindex="0"><img src="cake3.png" alt="Cake 3"></div>
+          <div class="bake-item" data-src="cake4.png" tabindex="0"><img src="cake4.png" alt="Cake 4"></div>
+           <div class="bake-item" data-src="cake5.png" tabindex="0"><img src="cake5.png" alt="Cake 5"></div>
+          <div class="bake-item" data-src="cake6.png" tabindex="0"><img src="cake6.png" alt="Cake 6"></div>
+          <div class="bake-item" data-src="cake7.png" tabindex="0"><img src="cake7.png" alt="Cake 7"></div>
+          <div class="bake-item" data-src="cake8.png" tabindex="0"><img src="cake8.png" alt="Cake 8"></div>
+        </div>
+        <div class="bake-controls">
+          <button id="bake-cancel" class="bake-cancel">Cancel</button>
+          <button id="bake-save" class="bake-save">Save</button>
+        </div>
+      </div>
+    `);
+        document.body.appendChild(bakePanel);
+        console.info('Bake panel created.');
+      }
+
+      // elements
+      const grid = document.getElementById('bake-grid');
+      const items = Array.from(grid.querySelectorAll('.bake-item'));
+      const cancelBtn = document.getElementById('bake-cancel');
+      const saveBtn = document.getElementById('bake-save');
+
+      // state (load saved)
+      let selectedCake = localStorage.getItem('selected-cake') || null;
+
+      // helper: mark selection in UI
+      function markSelected() {
+        items.forEach(it => {
+          const src = it.dataset.src;
+          it.classList.toggle('selected', src === selectedCake);
+        });
+      }
+
+      // initial apply
+      markSelected();
+
+      // attach click & keyboard handlers
+      items.forEach(it => {
+        it.addEventListener('click', () => {
+          selectedCake = it.dataset.src;
+          markSelected();
+        });
+        it.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectedCake = it.dataset.src;
+            markSelected();
+          }
+          // allow arrow key navigation between items
+          if (e.key === 'ArrowRight') {
+            const next = items[(items.indexOf(it) + 1) % items.length];
+            next && next.focus();
+          }
+          if (e.key === 'ArrowLeft') {
+            const prev = items[(items.indexOf(it) - 1 + items.length) % items.length];
+            prev && prev.focus();
+          }
+          if (e.key === 'ArrowDown') {
+            // move two to go to next row
+            const idx = (items.indexOf(it) + 2) % items.length;
+            items[idx] && items[idx].focus();
+          }
+          if (e.key === 'ArrowUp') {
+            const idx = (items.indexOf(it) - 2 + items.length) % items.length;
+            items[idx] && items[idx].focus();
+          }
+        });
+      });
+
+      // ------------- Add / replace inside your existing bake script -------------
+      // After saveBtn is defined, replace its click handler with this enhanced version:
+
+      saveBtn.addEventListener('click', () => {
+        if (selectedCake) {
+          // persist selection
+          localStorage.setItem('selected-cake', selectedCake);
+
+          const ev = new CustomEvent('bake:selected', {
+            detail: { cake: selectedCake, timestamp: Date.now() }
+          });
+          window.dispatchEvent(ev);
+
+          window.getSelectedCake = function () {
+            return localStorage.getItem('selected-cake') || null;
+          };
+
+          const coinBtn = document.getElementById('coin-btn');
+          if (coinBtn) {
+            coinBtn.classList.add('pulse');
+            setTimeout(() => coinBtn.classList.remove('pulse'), 700);
+          }
+
+          closePanel();
+          console.info('Saved cake:', selectedCake);
+        } else {
+          grid.animate(
+            [
+              { boxShadow: '0 0 0 rgba(201,108,44,0)' },
+              { boxShadow: '0 16px 38px rgba(201,108,44,0.06)' }
+            ],
+            { duration: 420, easing: 'ease-out' }
+          );
+          return;
+        }
+
+        // ⬇⬇ these lines stay, just make sure window.setCakePreview exists
+        if (window.setCakePreview) {
+          window.setCakePreview(selectedCake);   // show B&W cake in HUD
+          const lastCake = window.getSelectedCake();
+          if (lastCake) window.setCakePreview(lastCake);
+        }
+
+        if (typeof showSessionStartButton === 'function') {
+          showSessionStartButton();
+        }
+      });
+
+
+      // Ensure getter exists on load (so other scripts can call it anytime)
+      window.getSelectedCake = function () {
+        return localStorage.getItem('selected-cake') || null;
+      };
+
+      // ------------- Example: how another module (e.g. timer) can listen -------------
+      // Put this in your timer script (or any other module) to react when the user picks a cake
+      window.addEventListener('bake:selected', (e) => {
+        const cake = e.detail?.cake || null;
+        console.log('Received selected cake from bake panel:', cake);
+
+        // Example reactions:
+        // 1) show selected cake in UI somewhere:
+        const cakePreviewEl = document.getElementById('selected-cake-preview');
+        if (cakePreviewEl) cakePreviewEl.src = cake;
+
+        // 2) tag a timer session: store currently selected cake as session tag
+        sessionStorage.setItem('current-session-cake', cake);
+
+        // 3) optionally start a timer automatically (example: start 25 minutes)
+        // if you want to auto-start on bake selection uncomment:
+        // if (typeof startTimer === 'function') startTimer(25); // or call your timer start API
+      });
+
+      // ------------- Optional usage examples -------------
+      // Read synchronously at any time:
+      const lastCake = window.getSelectedCake(); // e.g. "cake2.png"
+
+      // Use your uploaded screenshot as a decorative preview if you want:
+      const SSS = '/mnt/data/Screenshot 2025-11-26 at 1.35.49 AM.png';
+      // Example: set mood-panel preview background (if you use mood preview)
+      const moodPreview = document.getElementById('mood-preview');
+      if (moodPreview) {
+        moodPreview.style.backgroundImage = `url("${SSS}")`;
+        moodPreview.style.backgroundSize = 'cover';
+      }
+      // ------------------- Add these definitions (paste after your current code) -------------------
+      // position panel to the left of the bake annotation (flip if not enough space)
+      function positionPanelNear(anchorEl) {
+        try {
+          const rect = anchorEl.getBoundingClientRect();
+          const gap = 12;
+          // prefer left side
+          let left = rect.left - gap - bakePanel.offsetWidth;
+          if (left < 8) {
+            // not enough space on left -> place to right
+            left = rect.right + gap;
+            bakePanel.classList.remove('flip-left');
+          } else {
+            bakePanel.classList.add('flip-left');
+          }
+          bakePanel.style.left = `${Math.max(8, left)}px`;
+          bakePanel.style.top = `${Math.max(8, rect.top)}px`;
+        } catch (err) {
+          bakePanel.style.left = '24px';
+          bakePanel.style.top = '120px';
+        }
+      }
+
+      function openPanel(anchorEl) {
+        // anchorEl may be the annotation element or something with getBoundingClientRect
+        const el = (anchorEl && anchorEl.getBoundingClientRect) ? anchorEl : document.querySelector('.annotation.right') || document.body;
+        positionPanelNear(el);
+        bakePanel.setAttribute('aria-hidden', 'false');
+        bakePanel.style.pointerEvents = 'auto';
+        // focus selected or first item
+        const focusTarget = items.find(i => i.dataset.src === selectedCake) || items[0];
+        focusTarget && focusTarget.focus();
+      }
+
+      function closePanel() {
+        bakePanel.setAttribute('aria-hidden', 'true');
+        bakePanel.style.pointerEvents = 'none';
+      }
+
+      // hook the Bake annotation so a user click opens the bake panel
+      let bakeAnnotation = Array.from(document.querySelectorAll('.annotation')).find(a => {
+        const t = a.querySelector('.label-title')?.textContent?.trim().toLowerCase();
+        return t && t.includes('bake');
+      });
+      if (bakeAnnotation) {
+        bakeAnnotation.style.pointerEvents = 'auto';
+        bakeAnnotation.setAttribute('tabindex', '0');
+        const clickable = bakeAnnotation.querySelector('.annotation-inner') || bakeAnnotation;
+        clickable.addEventListener('click', () => openPanel(bakeAnnotation));
+        clickable.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPanel(bakeAnnotation); }
+        });
+      } else {
+        console.warn('Bake annotation not found — call openPanel(anchorEl) to open the bake panel programmatically.');
+      }
+
+      // close on outside click and Esc
+      document.addEventListener('click', (e) => {
+        if (!bakePanel.contains(e.target) && !(bakeAnnotation && bakeAnnotation.contains(e.target))) closePanel();
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+      // ------------------- end definitions -------------------
+
+
+      console.info('Bake panel ready.');
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // === configuration ===
+      // Use the uploaded file as image source by default (developer-provided path)
+      const IMG_SRC = 'treasure.png'; // change to 'treasure.png' if you use that actual file
+      // Example coin values for each treasure
+      const TREASURES = [
+        { id: 'treas1', coins: 50, label: 'Bronze Chest' },
+        { id: 'treas2', coins: 70, label: 'Silver Chest' },
+        { id: 'treas3', coins: 100, label: 'Golden Crate' },
+        { id: 'treas4', coins: 150, label: 'Ruby Box' },
+        { id: 'treas5', coins: 30, label: 'Small Pouch' },
+        { id: 'treas6', coins: 85, label: 'Moss Satchel' },
+        { id: 'treas7', coins: 200, label: 'Ancient Vault' },
+        { id: 'treas8', coins: 120, label: 'Crystal Jar' }
+      ];
+
+      // helper to create element from html
+      function htmlToEl(html) {
+        const t = document.createElement('template');
+        t.innerHTML = html.trim();
+        return t.content.firstChild;
+      }
+
+      // Create store panel if missing
+      let storePanel = document.getElementById('store-panel');
+      if (!storePanel) {
+        storePanel = htmlToEl(`
+      <div id="store-panel" class="store-panel" role="dialog" aria-hidden="true" aria-label="Store - Treasures">
+        <div class="store-head">
+          <div>
+            <div class="store-title">Store</div>
+            <div class="store-sub">Redeem treasures for coins</div>
+          </div>
+          <button id="store-close" class="store-close" aria-label="Close store">✕</button>
+        </div>
+        <div class="store-scroll">
+          <div class="store-grid" id="store-grid"></div>
+        </div>
+        <div class="store-controls">
+          <button id="store-buy" class="store-buy">Redeem</button>
+        </div>
+      </div>
+    `);
+        document.body.appendChild(storePanel);
+        console.info('Store panel created.');
+      }
+
+      // references
+      const storeGrid = document.getElementById('store-grid');
+      const storeClose = document.getElementById('store-close');
+      const storeBuy = document.getElementById('store-buy');
+
+      // populate treasures
+      storeGrid.innerHTML = '';
+      TREASURES.forEach((t, idx) => {
+        const card = htmlToEl(`
+      <div class="treasure-card" tabindex="0" role="button" data-id="${t.id}" aria-selected="false" data-coins="${t.coins}" title="${t.label}">
+        <img src="${IMG_SRC}" alt="${t.label}">
+        <div class="treasure-badge" aria-hidden="true"><span class="coins-count">${t.coins}</span> coins <span style="margin-left:6px;">🏅</span></div>
+      </div>
+    `);
+        storeGrid.appendChild(card);
+      });
+
+      // state
+      let selectedTreasure = localStorage.getItem('selected-treasure') || null;
+
+      // helper to update selected visuals
+      function updateSelectedUI() {
+        const cards = Array.from(storeGrid.querySelectorAll('.treasure-card'));
+        cards.forEach(c => {
+          const id = c.dataset.id;
+          const sel = (id === selectedTreasure);
+          c.setAttribute('aria-selected', sel ? 'true' : 'false');
+          c.classList.toggle('selected', sel);
+        });
+      }
+      updateSelectedUI();
+
+      // attach events to cards
+      storeGrid.querySelectorAll('.treasure-card').forEach((card, i, arr) => {
+        card.addEventListener('click', () => {
+          selectedTreasure = card.dataset.id;
+          updateSelectedUI();
+        });
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedTreasure = card.dataset.id; updateSelectedUI(); }
+          if (e.key === 'ArrowRight') { const next = arr[(i + 1) % arr.length]; next && next.focus(); }
+          if (e.key === 'ArrowLeft') { const prev = arr[(i - 1 + arr.length) % arr.length]; prev && prev.focus(); }
+          if (e.key === 'ArrowDown') { const idx = (i + 2) % arr.length; arr[idx] && arr[idx].focus(); }
+          if (e.key === 'ArrowUp') { const idx = (i - 2 + arr.length) % arr.length; arr[idx] && arr[idx].focus(); }
+        });
+
+        // show coin overlay on hover/focus handled by CSS; but also update badge text (if dynamic)
+        card.addEventListener('mouseenter', () => {
+          const b = card.querySelector('.treasure-badge');
+          b.style.opacity = '1';
+        });
+        card.addEventListener('mouseleave', () => {
+          const b = card.querySelector('.treasure-badge');
+          if (card.getAttribute('aria-selected') !== 'true') b.style.opacity = '';
+        });
+      });
+
+      // Redeem / Save selection
+      storeBuy.addEventListener('click', () => {
+        if (!selectedTreasure) {
+          // highlight grid to indicate no selection
+          storeGrid.animate([{ transform: 'translateY(0px)' }, { transform: 'translateY(-6px)' }, { transform: 'translateY(0px)' }], { duration: 420 });
+          return;
+        }
+        // persist selected treasure id
+        localStorage.setItem('selected-treasure', selectedTreasure);
+
+        // dispatch event with the treasure info
+        const treasureObj = TREASURES.find(x => x.id === selectedTreasure);
+        const ev = new CustomEvent('store:selected', { detail: { id: selectedTreasure, coins: treasureObj.coins, label: treasureObj.label, timestamp: Date.now() } });
+        window.dispatchEvent(ev);
+
+        // expose helper
+        window.getSelectedTreasure = () => ({ id: selectedTreasure, coins: treasureObj.coins, label: treasureObj.label });
+
+        // tiny feedback: pulse coins button if exists
+        const coinBtn = document.getElementById('coin-btn');
+        if (coinBtn) { coinBtn.classList.add('pulse'); setTimeout(() => coinBtn.classList.remove('pulse'), 700); }
+
+        closeStorePanel();
+        console.info('Store selected:', selectedTreasure, treasureObj);
+      });
+
+      // Close button
+      storeClose.addEventListener('click', () => { closeStorePanel(); });
+
+      // open/close functions + position near annotation (place left side by default)
+      function positionStoreNear(annotationEl) {
+        try {
+          const rect = annotationEl.getBoundingClientRect();
+          const gap = 12;
+          let left = rect.left - gap - storePanel.offsetWidth; // prefer left
+          if (left < 8) {
+            // not enough left space -> show on right
+            left = rect.right + gap;
+            storePanel.classList.remove('flip-left');
+          } else {
+            storePanel.classList.add('flip-left');
+          }
+          storePanel.style.left = `${Math.max(8, left)}px`;
+          storePanel.style.top = `${Math.max(8, rect.top)}px`;
+        } catch (err) {
+          storePanel.style.left = '24px';
+          storePanel.style.top = '120px';
+        }
+      }
+
+      function openStorePanel(anchorEl) {
+        positionStoreNear(anchorEl);
+        storePanel.setAttribute('aria-hidden', 'false');
+        storePanel.style.pointerEvents = 'auto';
+        updateSelectedUI();
+        // focus first selected or first card
+        const first = storeGrid.querySelector('.treasure-card[aria-selected="true"]') || storeGrid.querySelector('.treasure-card');
+        first && first.focus();
+      }
+      function closeStorePanel() {
+        storePanel.setAttribute('aria-hidden', 'true');
+        storePanel.style.pointerEvents = 'none';
+      }
+
+      // Hook up Store annotation (find by title text or class)
+      let storeAnnotation = Array.from(document.querySelectorAll('.annotation')).find(a => {
+        const t = a.querySelector('.label-title')?.textContent?.trim().toLowerCase();
+        return t && (t.includes('store') || t.includes('reward'));
+      });
+
+      if (storeAnnotation) {
+        storeAnnotation.style.pointerEvents = 'auto';
+        storeAnnotation.setAttribute('tabindex', '0');
+        const clickable = storeAnnotation.querySelector('.annotation-inner') || storeAnnotation;
+        clickable.addEventListener('click', () => openStorePanel(storeAnnotation));
+        clickable.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openStorePanel(storeAnnotation); } });
+      } else {
+        console.warn('Store annotation not found. To open store programmatically call openStorePanel(annotationEl).');
+      }
+
+      // close panel when clicking outside or pressing ESC
+      document.addEventListener('click', (e) => {
+        if (!storePanel.contains(e.target) && !(storeAnnotation && storeAnnotation.contains(e.target))) closeStorePanel();
+      });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeStorePanel(); });
+
+      // init: load previously selected treasure
+      selectedTreasure = localStorage.getItem('selected-treasure') || null;
+      updateSelectedUI();
+
+      // expose getter even if none selected
+      window.getSelectedTreasure = function () {
+        const id = localStorage.getItem('selected-treasure') || selectedTreasure;
+        const obj = TREASURES.find(x => x.id === id);
+        return obj ? { id: obj.id, coins: obj.coins, label: obj.label } : null;
+      };
+
+      console.info('Store (treasures) initialized.');
+
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Create HUD container if missing
+      let hud = document.querySelector('.top-hud');
+      if (!hud) {
+        hud = document.createElement('div');
+        hud.className = 'top-hud';
+        document.body.appendChild(hud);
+      }
+
+      // Helper: move an element into the HUD (wrap into .hud-item for consistent spacing)
+      function moveIntoHud(selector, fallbackCreate = false, createHTML = '') {
+        let el = document.querySelector(selector);
+        if (!el && fallbackCreate && createHTML) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = createHTML.trim();
+          el = tmp.firstChild;
+          document.body.appendChild(el);
+        }
+        if (!el) return null;
+        // If already inside hud, do nothing
+        if (hud.contains(el)) return el;
+        // Wrap in container for consistent spacing (but keep original node)
+        const wrapper = document.createElement('div');
+        wrapper.className = 'hud-item';
+        // preserve tabIndex and aria-live if present on existing el
+        wrapper.appendChild(el);
+        hud.appendChild(wrapper);
+        return el;
+      }
+
+      // Move coin button (it exists as #coin-btn). If missing, create a simple fallback.
+      moveIntoHud('#coin-btn', true, '<button id="coin-btn" aria-label="Points" title="Points"><img src="coin.png" alt="coin"><span id="coin-count">0</span></button>');
+
+      // Move countdown badge (create fallback if not present)
+      moveIntoHud('#countdown-badge', true, '<div id="countdown-badge" aria-live="polite" hidden><span id="countdown-text">00:00</span></div>');
+
+      moveIntoHud('#mood-tag', true, '<div id="mood-tag" aria-live="polite">tag · music</div>');
+
+      // --- Cake preview slot in HUD ---
+      function ensureCakeHud() {
+        let cakeEl = document.getElementById('cake-progress');
+        if (cakeEl) return cakeEl;
+
+        const hudItem = document.createElement('div');
+        hudItem.className = 'hud-item';
+
+        hudItem.innerHTML = `
+      <div id="cake-progress" class="cake-progress" aria-label="Focus treat progress">
+        <img id="cake-progress-color" alt="Selected cake">
+        <img id="cake-progress-mask" alt="" aria-hidden="true">
+      </div>
+    `;
+        hud.appendChild(hudItem);
+        return hudItem.querySelector('#cake-progress');
+      }
+
+      ensureCakeHud();
+
+      // Add optional vertical divider(s) for better separation (insert between items)
+      // remove existing dividers first (avoid duplicates)
+      hud.querySelectorAll('.hud-item-divider').forEach(n => n.remove());
+      // Insert divider between 1st and 2nd child and between 2nd and 3rd child if present
+      const children = Array.from(hud.children);
+      if (children.length >= 2) {
+        const div1 = document.createElement('div'); div1.className = 'hud-item-divider';
+        hud.insertBefore(div1, children[1]);
+      }
+      if (children.length >= 3) {
+        const div2 = document.createElement('div'); div2.className = 'hud-item-divider';
+        // after previous insertion, children changed; compute updated
+        const updated = Array.from(hud.children);
+        if (updated[3]) hud.insertBefore(div2, updated[3]);
+        else hud.appendChild(div2);
+      }
+
+      // Accessibility: ensure children are keyboard-focusable
+      hud.querySelectorAll('button, [tabindex]').forEach(el => {
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+      });
+
+      // Optional: use your uploaded screenshot as background preview on mood-tag
+      const SSS = '/mnt/data/Screenshot 2025-11-26 at 2.08.57 AM.png';
+      const moodTag = document.getElementById('mood-tag');
+      if (moodTag) {
+        // only set decorative thumbnail if the element is empty or you prefer a visual
+        // moodTag.style.backgroundImage = `url("${SSS}")`;
+        // moodTag.style.backgroundSize = 'cover';
+      }
+
+      // Adjustments: ensure coin button doesn't keep absolute/fixed styles interfering
+      const coinBtn = document.getElementById('coin-btn');
+      if (coinBtn) {
+        coinBtn.style.position = 'static';
+        coinBtn.style.top = '';
+        coinBtn.style.right = '';
+        // ensure inline-flex appearance
+        coinBtn.style.display = 'inline-flex';
+        coinBtn.style.alignItems = 'center';
+        coinBtn.style.gap = '8px';
+      }
+
+      // Ensure countdown badge is visible when not hidden and styled inline
+      const countdown = document.getElementById('countdown-badge');
+      if (countdown) {
+        countdown.hidden = countdown.hidden; // keep state
+        countdown.style.position = 'relative';
+      }
+
+      console.info('Top HUD arranged horizontally.');
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const intro = document.getElementById('intro-overlay');
+      const bearImg = document.getElementById('peebo-bear');
+      const nextBtn = document.getElementById('intro-next');
+
+      if (!intro || !bearImg || !nextBtn) return;
+
+      // hide features while intro runs
+      document.body.classList.add('intro-active');
+
+      // simple 2-frame waving animation using bear1.png / bear2.png
+      const frames = ['bear1.png', 'bear2.png',];
+      let frameIndex = 0;
+
+      const waveInterval = setInterval(() => {
+        frameIndex = (frameIndex + 1) % frames.length;
+        bearImg.src = frames[frameIndex];
+      }, 800); // speed of waving
+
+      // handle "Next" click
+      nextBtn.addEventListener('click', () => {
+        clearInterval(waveInterval);
+
+        intro.classList.add('hide');        // fade out overlay
+        document.body.classList.remove('intro-active');
+        document.body.classList.add('features-show'); // fade in features
+
+        // optional: remove node after animation
+        setTimeout(() => {
+          intro.remove();
+        }, 320);
+      });
+    });
+  </script>
+  <script>
+    // Controls the big "Start" button above the cottage window
+    document.addEventListener('DOMContentLoaded', () => {
+      const cafeWrapper = document.querySelector('.cafe-wrapper') || document.body;
+
+      // show the Start button (called after cake is chosen)
+      window.showSessionStartButton = function () {
+        let btn = document.getElementById('session-start-btn');
+        if (!btn) {
+          btn = document.createElement('button');
+          btn.id = 'session-start-btn';
+          btn.className = 'session-start-btn';
+          btn.type = 'button';
+          btn.textContent = 'Start';
+
+          cafeWrapper.appendChild(btn);
+
+          btn.addEventListener('click', () => {
+            // 1) start the focus timer that you configured in the timer script
+            if (typeof window.startFocusSession === 'function') {
+              // reset cake progress to 0 at the moment we start
+              if (typeof window.updateCakeProgress === 'function') {
+                window.updateCakeProgress(0);
+              }
+              window.startFocusSession();
+            }
+
+            // 2) stop the window bear animation once the real session begins
+            if (typeof window.stopWindowBearAnimation === 'function') {
+              window.stopWindowBearAnimation();
+            }
+
+            // 3) hide the Start button during the running session
+            window.hideSessionStartButton();
+          });
+        }
+
+        btn.classList.add('visible');
+      };
+
+      window.hideSessionStartButton = function () {
+        const btn = document.getElementById('session-start-btn');
+        if (btn) btn.classList.remove('visible');
+      };
+    });
+  </script>
+
+</body>
+
+</html>
